@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bataille Navale</title>
+    <link rel="icon" type="image/x-icon" href="battleship_icon.png"></link>
+    <link rel="stylesheet" href="index.css"></link>
+</head>
+<body>
+    <div id="menu-screen" class="screen active">
+        <h1>Bataille Navale</h1>
+        <button class="menu-button" id="vs-computer-btn">Jouer contre ordinateur</button>
+        <button class="menu-button" id="pvp-btn">Jouer contre un ami</button>
+        <button class="menu-button" id="tournament-btn">Mode Tournoi</button>
+    </div>
+
+    <div id="player-names-screen" class="screen">
+        <h2>Saisie des Noms des Joueurs</h2>
+        <input type="text" id="player1-name" class="player-input" placeholder="Nom du Joueur 1">
+        <input type="text" id="player2-name" class="player-input" placeholder="Nom du Joueur 2">
+        <button id="start-pvp-game" class="input-button">Commencer la Partie</button>
+        <button id="back-to-menu-from-names" class="input-button">Retour au Menu</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div id="player-names-display">
+            <span id="player1-display"></span> vs <span id="player2-display"></span>
+        </div>
+        <div class="game-container">
+            <div id="player1-grid" class="grid"></div>
+            <div id="player2-grid" class="grid"></div>
+        </div>
+        <div id="message"></div>
+        <button id="back-to-menu">Retour au Menu</button>
+    </div>
+
+    <script src="index.js"></script>
+    <script src="eventListenersMenu.js"></script>
+</body>
+</html>
