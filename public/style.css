@@ -1,0 +1,22 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #e3f2fd;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  margin-top: 20px;
+  color: #0d47a1;
+}
+
+#player-info {
+  font-weight: bold;
+  color: #1565c0;
+  margin-top: 10px;
+}
+
+#grids {
+  margin-top: 20px;
+}

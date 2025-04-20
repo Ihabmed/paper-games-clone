@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bataille Navale</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    .hidden { display: none; }
+    .grid { display: grid; grid-template-columns: repeat(10, 30px); gap: 2px; justify-content: center; margin: 20px auto; }
+    .cell { width: 30px; height: 30px; background-color: #b0c4de; border: 1px solid #333; cursor: pointer; }
+    .hit { background-color: red; }
+    .miss { background-color: white; }
+    .ship { background-color: #555; }
+    .centered { margin-top: 50px; }
+    input, button { font-size: 16px; padding: 8px 12px; margin: 10px; }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="/public/icon.png">
+</head>
+<body>
+  <h1>Bataille Navale</h1>
+  <p id="player-info">En attente d’un autre joueur...</p>
+  <div id="grids">
+    <div id="startScreen">
+      <h1>Bataille Navale</h1>
+      <button onclick="showPlayerForm()">👥 Joueur vs Joueur</button><br><br>
+      <button onclick="showSoloForm()">🤖 Joueur vs Ordinateur</button>
+    </div>
+  
+    <div id="playerForm" class="hidden centered">
+      <h2>Entrez les noms des joueurs</h2>
+      <input type="text" id="player1" placeholder="Joueur 1" required><br>
+      <input type="text" id="player2" placeholder="Joueur 2" required><br>
+      <button onclick="startMultiplayerGame()">Démarrer la partie</button>
+    </div>
+  
+    <div id="soloForm" class="hidden centered">
+      <h2>Entrez votre nom</h2>
+      <input type="text" id="soloPlayer" placeholder="Votre nom" required><br>
+      <button onclick="startSoloGame()">Jouer contre l'ordinateur</button>
+    </div>
+  
+    <div id="gameBoard" class="hidden">
+      <h2 id="turnInfo"></h2>
+      <div class="grid" id="grid"></div>
+    </div>
+  
+  
+  </div>
+  <script>
+    let players = [], currentPlayer = 0, enemyBoard = [], myBoard = [], ships = [5, 4, 3];
+    let soloMode = false;
+
+    function showPlayerForm() {
+      document.getElementById('playerForm').classList.remove('hidden');
+      document.getElementById('soloForm').classList.add('hidden');
+    }
+
+    function showSoloForm() {
+      document.getElementById('soloForm').classList.remove('hidden');
+      document.getElementById('playerForm').classList.add('hidden');
+    }
+
+    function createBoard() {
+      let board = [];
+      for (let i = 0; i < 10; i++) {
+        board[i] = [];
+        for (let j = 0; j < 10; j++) {
+          board[i][j] = { ship: false, hit: false };
+        }
+      }
+      return board;
+    }
+
+    function placeShipsRandom(board) {
+      ships.forEach(size => {
+        let placed = false;
+        while (!placed) {
+          const x = Math.floor(Math.random() * 10);
+          const y = Math.floor(Math.random() * 10);
+          const horizontal = Math.random() < 0.5;
+          let fits = true;
+          for (let i = 0; i < size; i++) {
+            const xi = x + (horizontal ? i : 0);
+            const yi = y + (horizontal ? 0 : i);
+            if (xi >= 10 || yi >= 10 || board[xi][yi].ship) {
+              fits = false;
+              break;
+            }
+          }
+          if (fits) {
+            for (let i = 0; i < size; i++) {
+              const xi = x + (horizontal ? i : 0);
+              const yi = y + (horizontal ? 0 : i);
+              board[xi][yi].ship = true;
+            }
+            placed = true;
+          }
+        }
+      });
+    }
+
+    function startMultiplayerGame() {
+      const p1 = document.getElementById('player1').value;
+      const p2 = document.getElementById('player2').value;
+      if (!p1 || !p2) return alert("Entrez les deux noms !");
+      soloMode = false;
+      players = [p1, p2];
+      myBoard = [createBoard(), createBoard()];
+      enemyBoard = [myBoard[1], myBoard[0]];
+      placeShipsRandom(myBoard[0]);
+      placeShipsRandom(myBoard[1]);
+      launchGame();
+    }
+
+    function startSoloGame() {
+      const p1 = document.getElementById('soloPlayer').value;
+      if (!p1) return alert("Entrez votre nom !");
+      soloMode = true;
+      players = [p1, "Ordinateur"];
+      myBoard = [createBoard(), createBoard()];
+      enemyBoard = [myBoard[1], myBoard[0]];
+      placeShipsRandom(myBoard[0]);
+      placeShipsRandom(myBoard[1]);
+      launchGame();
+    }
+
+    function launchGame() {
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('playerForm').classList.add('hidden');
+      document.getElementById('soloForm').classList.add('hidden');
+      document.getElementById('gameBoard').classList.remove('hidden');
+      drawBoard();
+    }
+
+    function drawBoard() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      document.getElementById('turnInfo').innerText = `Au tour de : ${players[currentPlayer]}`;
+
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          const cell = document.createElement('div');
+          const data = enemyBoard[currentPlayer][i][j];
+          cell.className = 'cell';
+          if (data.hit && data.ship) cell.classList.add('hit');
+          else if (data.hit) cell.classList.add('miss');
+          cell.onclick = () => {
+            if (!soloMode || currentPlayer === 0) handleClick(i, j);
+          };
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function handleClick(x, y) {
+      const cell = enemyBoard[currentPlayer][x][y];
+      if (cell.hit) return;
+      cell.hit = true;
+
+      if (checkWin(enemyBoard[currentPlayer])) {
+        alert(`${players[currentPlayer]} a gagné !`);
+        location.reload();
+        return;
+      }
+
+      if (!cell.ship) {
+        currentPlayer = 1 - currentPlayer;
+        drawBoard();
+        if (soloMode && currentPlayer === 1) {
+          setTimeout(cpuMove, 500);
+        }
+      } else {
+        drawBoard();
+      }
+    }
+
+    function cpuMove() {
+      let x, y, cell;
+      do {
+        x = Math.floor(Math.random() * 10);
+        y = Math.floor(Math.random() * 10);
+        cell = enemyBoard[currentPlayer][x][y];
+      } while (cell.hit);
+      handleClick(x, y);
+    }
+
+    function checkWin(board) {
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          if (board[i][j].ship && !board[i][j].hit) return false;
+        }
+      }
+      return true;
+    }
+  </script>
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
