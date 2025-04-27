@@ -16,24 +16,10 @@ class BatailleNavale {
         this.player2Ships = [];
         this.computerShips = [];
         
-        this.updatePlayerNames();
         this.initGame();
-        this.setupEventListeners();
         this.generate_occupied_grids();
         this.computerAttack();
         this.count();
-    }
-
-    updatePlayerNames() {
-        document.getElementById('player1-display').textContent = this.player1Name;
-        document.getElementById('player2-display').textContent = this.player2Name;
-    }
-
-    setupEventListeners() {
-        this.backToMenuBtn.addEventListener('click', () => {
-            this.gameScreen.classList.remove('active');
-            this.menuScreen.classList.add('active');
-        });
     }
 
     initGame() {
@@ -318,7 +304,12 @@ class BatailleNavale {
         await this.sleep(1000);
         do
         {
-            const cell = this.player1Grid.querySelector(`[data-index="${10 * Math.floor(Math.random() * 10) + Math.floor(Math.random() * 10)}"]`);
+            let hitCell;
+            let cell;
+            do {
+                hitCell = 10 * Math.floor(Math.random() * 10) + Math.floor(Math.random() * 10);
+                cell = this.player1Grid.querySelector(`[data-index="${hitCell}"]`);
+            } while (cell.classList.contains('hit') || cell.classList.contains('miss'));
             if (cell.classList.contains('ship')) {
                 cell.classList.add('hit');
                 await this.sleep(1500);
@@ -359,12 +350,21 @@ class BatailleNavale {
             : this.count(this.computerShips.flat());
 
         if (hitShips.length === totalShipCells) {
-            const winnerName = targetGrid === this.player2Grid ? "player" : ";computer";
-            this.messageDiv.textContent = `${winnerName} a gagné !`;
+            const winnerName = targetGrid === this.player2Grid ? "player" : "computer";
+            if (winnerName == "player")
+            {
+                this.messageDiv.textContent = `joueur a gagné !`;
+            }
+            else
+            {
+                this.messageDiv.textContent = `ordinateur a gagné !`;
+
+            }
             for (let i = 0; i < 100; i++) {
                 let cell = this.player2Grid.querySelector(`[data-index="${i}"]`);
                 cell.classList.add('end');
             }
+            this.turn = 1;
         }    
     }
 }

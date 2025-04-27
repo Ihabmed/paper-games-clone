@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <a href="index.php"><img src="arrow.svg" alt="a flesh" style='width: 50px; height: 50px;'></a>
+    <a href="index.php"><img src="arrow.svg" alt="an arrow" style='width: 50px; height: 50px; margin-left: 10px; margin-top: 10px;'></a>
 
-    <div class="container">
+    <div class="container" style="background-color: white;">
     <?php
 
     if(isset($_POST["Change_password"])){
@@ -74,25 +74,20 @@
         }
     }
     ?>
+    <h1 style="margin-bottom: 50px; margin-left: 60px;">Changer mot passe</h1>
     <form method="post" action="setting.php">
-
     <div class="form-group">
-        <label for="email">email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+    <label for="password" style="font-weight: bold; margin-bottom: 10px;">Nouveau mot passe</label>
+    <input type="password" class="form-control" id="password" name="password" placeholder="saisir nouveau mot passe" required>
     </div>
 
     <div class="form-group">
-    <label for="password">New password</label>
-    <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-
-    <div class="form-group">
-    <label for="password_confirmation">Repeat password</label>
-    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+    <label for="password_confirmation" style="font-weight: bold; margin-bottom: 10px;">Confirmer nouveau mot passe</label>
+    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="confirmer nouveau mot passe" required>
     </div>
 
     <div class="form-btn">
-        <input type="submit" class="btn btn-primary" value="change password" name="Change_password">
+        <input type="submit" class="btn btn-primary" value="changer" name="Change_password" style="width: 500px; height: 50px; margin-top: 20px;">
     </div>
     </form>
     </div>

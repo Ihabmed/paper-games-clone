@@ -6,10 +6,11 @@
     <title>Profile</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <a href="index.php"><img src="arrow.svg" alt="an arrow" style='width: 50px; height: 50px;'></a>
-    <div>
-    <?php
+<body style="display:flex;">
+    <header style="background-color: white; height: 80px; width: 100%; position: fixed; top: 0; left: 0; z-index: 1; display: flex;">
+        <a href="index.php"><img src="arrow.svg" alt="an arrow" style='width: 50px; height: 50px; margin-top: 10px; margin-left: 10px;'></a>
+
+        <?php
 
         session_start();
 
@@ -21,8 +22,6 @@
 
         $username = mysqli_query($conn, $username_sql);
         $username2 = mysqli_fetch_array($username, MYSQLI_ASSOC);
-
-        echo "<h1 style='margin-left: 550px;'>Profile de " . $username2['username'] . "</h1>";
 
         $sql = "SELECT id, COUNT(id) as total_victoires FROM `partie`, `user` WHERE (user_1 = $id or user_2 = $id) and gagne = $id GROUP BY id";
 
@@ -37,32 +36,36 @@
         $victoires = mysqli_fetch_array($result, MYSQLI_ASSOC);
         $defaites = mysqli_fetch_array($result2, MYSQLI_ASSOC);
         
-        echo "<table style='padding: 10px; margin-left: 350px;'>";
+        echo "<table style='margin-left: 150px; width:900px;'>";
         echo "<tr>";
-        echo "<th style='width: 100px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>Totale parties joué</th>";
-        echo "<th style='width: 100px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>Victoires</th>";
-        echo "<th style='width: 100px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>Defaites</th>";
-        echo "<th style='width: 100px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>Statistique</th>";
-        echo "</tr>";
+        echo "<th style='width: 300px; border: 2px solid black; border-collapse: collapse; background-color: navy; color: white;'>Totale parties joué</th>";
+        echo "<th style='width: 300px; text-align: center; background-color: lightgray;'> ". $victoires['total_victoires'] + $defaites['total_defaites'] . "</th>";
+        echo "<th style='width: 300px; border: 2px solid black; border-collapse: collapse; background-color: navy; color: white;'>Victoires</th>";
+        echo "<th style='width: 300px; text-align: center; background-color: lightgray;'>". $victoires['total_victoires'] . "</th>";
+        echo "<th style='width: 300px; border: 2px solid black; border-collapse: collapse; background-color: navy; color: white;'>Defaites</th>";
+        echo "<th style='width: 300px; text-align: center; background-color: lightgray;'>". $defaites['total_defaites'] . "</th>";
+        echo "<th style='width: 300px; border: 2px solid black; border-collapse: collapse; background-color: navy; color: white;'>Statistique</th>";
 
-        echo "<tr>";
 
-        echo "<td style='text-align: center; padding: 10px; background-color: lightgray;'> ". $victoires['total_victoires'] + $defaites['total_defaites'] . "</td>";
-    
-        echo "<td style='text-align: center; background-color: lightgray;'>". $victoires['total_victoires'] . "</td>";
-
-        echo "<td style='text-align: center; background-color: lightgray;'>". $defaites['total_defaites'] . "</td>";
-
-        echo "<td style='text-align: center; background-color: lightgray;'>" . intval($victoires['total_victoires'] * 100 / ($victoires['total_victoires'] + $defaites['total_defaites'])) . " %</td>";
-
+        if ($victoires['total_victoires'] != 0)
+        {
+            echo "<th style='width: 300px; text-align: center; background-color: lightgray;'>" . intval($victoires['total_victoires'] * 100 / ($victoires['total_victoires'] + $defaites['total_defaites'])) . " %</th>";
+        }
+        else
+        {
+            echo "<th style='width: 300px; text-align: center; background-color: lightgray;'>" . intval($victoires['total_victoires'] * 100 / ($victoires['total_victoires'] + $defaites['total_defaites'])) . " %</th>";
+        }
         echo "</tr>";
 
         echo "</table'>";
-
-        echo "<table style='padding: 10px;margin-left: 475px; margin-top: 20px;'>";
+        ?>
+    </header>
+    <div>
+        <?php
+        echo "<table style='padding: 10px; margin-top: 100px; margin-left: -650px;'>";
         echo "<caption><h2>Historique des parties</h2></caption>";
         echo "<tr>";
-        echo "<th style='width: 100px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>opponent</th>";
+        echo "<th style='width: 150px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>adversaire</th>";
         echo "<th style='width: 150px; border: 2px solid black; border-collapse: collapse; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right: 20px; background-color: navy; color: white;'>Temps</th>";
         while($user = mysqli_fetch_assoc($result3)) {
             if ($user['gagne'] == $username2['username'])
